@@ -156,9 +156,56 @@
         </div>
 
         <div class="row">
+              <!-- Alerts with headings -->
+             <div class="col-lg-4 mb-4 mb-md-0">
+                <div class="card">
+                    <h5 class="card-header">Key Point K/L Kerja Sama</h5>
+                    <div class="card-body">
+                        <div class="alert alert-warning alert-dismissible" role="alert">
+                            <h4 class="alert-heading d-flex align-items-center">
+                                <i class="mdi mdi-key-outline mdi-24px me-2"></i>Key Point KLDI Kerja Sama
+                            </h4>
+                            <hr />
+                            <p class="mb-0">
+                            <ul>
+                                <li>Jumlah Kerja Sama <b>Tertinggi</b> pada Tahun <b>2020</b></li>
+                                <li>Jumlah Kerja Sama <b>Terendah</b> pada Tahun <b>2021,2022,2023</b></li>
+                            </ul>
+                            </ul>
+                            </p>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
 
-            <!-- Donut Chart -->
-            <div class="col-lg-4 mb-4 mb-md-0">
+                </div>
+
+                <div class="card mt-2">
+                    <h5 class="card-header">Key Point K/L Webinar</h5>
+                    <div class="card-body">
+                        <div class="alert alert-primary alert-dismissible" role="alert">
+                            <h4 class="alert-heading d-flex align-items-center">
+                                <i class="mdi mdi-key-outline mdi-24px me-2"></i>Key Point KLDI Kerja Sama
+                            </h4>
+                            <hr />
+                            <p class="mb-0">
+                            <ul>
+                                <li>Jumlah Webinar <b>Terbanyak</b> pada Tahun <b>2021</b></li>
+                                <li>Jumlah Webinar <b>Terendah</b> pada Tahun <b>2023</b></li>
+                            </ul>
+                            </ul>
+                            </p>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+            <!--/ Alerts with headings -->
+
+             <!-- Donut Chart -->
+             <div class="col-lg-4 mb-4 mb-md-0">
                 <div class="card">
                   <div class="card-header d-flex align-items-center justify-content-between">
                     <div>
@@ -168,6 +215,21 @@
                   </div>
                   <div class="card-body">
                     <div id="donutChart"></div>
+                  </div>
+                </div>
+              </div>
+              <!-- /Donut Chart -->
+               <!-- Donut Chart -->
+             <div class="col-lg-4 mb-4 mb-md-0">
+                <div class="card">
+                  <div class="card-header d-flex align-items-center justify-content-between">
+                    <div>
+                      <h5 class="card-title mb-0">Jumlah Pelaksanaan Webinar</h5>
+                      <small class="text-muted">Data 5 Tahun Terakhir (2019-2023)</small>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div id="WebinarCharts"></div>
                   </div>
                 </div>
               </div>
@@ -597,7 +659,7 @@
         '#E0AED0',
         '#AC87C5',
         '#756AB6',
-        '#FFE5E5',
+        '#EE66A6',
         '#FF90BC',
         '#E1ACAC'
       ],
@@ -645,19 +707,21 @@
                 fontSize: '1.5rem',
                 color: legendColor,
                 formatter: function (val) {
-                  return parseInt(val, 10) + '%';
+                  return 'Data ' + parseInt(val, 10);
                 }
               },
-            //   total: {
-            //     show: false,
-            //     fontSize: '1.5rem',
-            //     color: headingColor,
-            //     label: 'Operational',
-            //     formatter: function (w) {
-            //       return '42%';
-            //     }
-            //   }
-            // }
+              total: {
+              show: true,
+              fontSize: '1.5rem',
+              color: headingColor,
+              label: 'Total Data',
+              formatter: function (w) {
+                // Menghitung total data dari series
+                let total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                return total;
+              }
+            }
+            }
           }
         }
       },
@@ -737,6 +801,172 @@
   if (typeof donutChartEl !== undefined && donutChartEl !== null) {
     const donutChart = new ApexCharts(donutChartEl, donutChartConfig);
     donutChart.render();
+  }
+
+
+
+    // Webinar Chart
+  // --------------------------------------------------------------------
+
+  var seriesData5 = @json($series5);
+  var yearsData5 = @json($years5);
+  console.log(yearsData5);
+  console.log(seriesData5);
+  const WebinarChartsEl = document.querySelector('#WebinarCharts'),
+    WebinarChartsConfig = {
+      chart: {
+        height: 400,
+        fontFamily: 'Inter',
+        type: 'donut'
+      },
+      labels: yearsData5,
+      series: seriesData5,
+      colors: [
+        '#E0AED0',
+        '#AC87C5',
+        '#756AB6',
+        '#EE66A6',
+        '#FF90BC',
+        '#E1ACAC'
+      ],
+      stroke: {
+        show: false,
+        curve: 'straight'
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val, opt) {
+          return parseInt(val, 10) + '%';
+        }
+      },
+      tooltip: {
+      enabled: true,
+      y: {
+        formatter: function(val, opts) {
+          // Format tooltip menjadi "X K/L Kerjasama"
+          return val + ' Kegiatan';
+        }
+      }
+    },
+      legend: {
+        show: true,
+        position: 'bottom',
+        markers: { offsetX: -3 },
+        itemMargin: {
+          vertical: 3,
+          horizontal: 10
+        },
+        labels: {
+          colors: legendColor,
+          useSeriesColors: false
+        }
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            labels: {
+              show: true,
+              name: {
+                fontSize: '2rem'
+              },
+              value: {
+                fontSize: '1.5rem',
+                color: legendColor,
+                formatter: function (val) {
+                  return 'Webinar ' + parseInt(val, 10);
+                }
+              },
+              total: {
+              show: true,
+              fontSize: '1.5rem',
+              color: headingColor,
+              label: 'Total Webinar',
+              formatter: function (w) {
+                // Menghitung total data dari series
+                let total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                return total;
+              }
+            }
+            }
+          }
+        }
+      },
+      responsive: [
+        {
+          breakpoint: 992,
+          options: {
+            chart: {
+              height: 380
+            },
+            legend: {
+              position: 'bottom',
+              labels: {
+                colors: legendColor,
+                useSeriesColors: false
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 576,
+          options: {
+            chart: {
+              height: 320
+            },
+            plotOptions: {
+              pie: {
+                donut: {
+                  labels: {
+                    show: true,
+                    name: {
+                      fontSize: '1.5rem'
+                    },
+                    value: {
+                      fontSize: '1rem'
+                    },
+                    total: {
+                      fontSize: '1.5rem'
+                    }
+                  }
+                }
+              }
+            },
+            legend: {
+              position: 'bottom',
+              labels: {
+                colors: legendColor,
+                useSeriesColors: false
+              }
+            }
+          }
+        },
+        {
+          breakpoint: 420,
+          options: {
+            chart: {
+              height: 280
+            },
+            legend: {
+              show: false
+            }
+          }
+        },
+        {
+          breakpoint: 360,
+          options: {
+            chart: {
+              height: 250
+            },
+            legend: {
+              show: false
+            }
+          }
+        }
+      ]
+    };
+  if (typeof WebinarChartsEl !== undefined && WebinarChartsEl !== null) {
+    const WebinarCharts = new ApexCharts(WebinarChartsEl, WebinarChartsConfig);
+    WebinarCharts.render();
   }
 
 

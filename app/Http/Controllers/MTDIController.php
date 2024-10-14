@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\mtdi_capaian_indeks_pengguna;
 use App\Models\mtdi_data_pendaftaran_akun_spse_simpel;
 use App\Models\mtdi_jumlah_kldi_yang_bekerja_sama;
+use App\Models\mtdi_jumlah_pelaksanaan_webinar;
 use App\Models\mtdi_list_project_aplikasi;
 use Illuminate\Http\Request;
 
@@ -16,11 +17,14 @@ class MTDIController extends Controller
         $data2 = mtdi_data_pendaftaran_akun_spse_simpel::all();
         $data3 = mtdi_list_project_aplikasi::all();
         $data4 = mtdi_jumlah_kldi_yang_bekerja_sama::all();
+        $data5 = mtdi_jumlah_pelaksanaan_webinar::all();
 
         list($years, $series) = $this->groupDataCapaianIndeksPengguna($data1);
         list($years2, $series2) = $this->groupDataAkunSPSESIMPEL($data2);
         list($years3, $series3, $apps3) = $this->groupDataListAplikasi($data3);
         list($years4, $series4) = $this->groupDataKLDIKerjaSama($data4);
+        list($years5, $series5) = $this->groupDataWebinar($data5);
+
 
 
         return view('content.trend_mtdi', compact([
@@ -32,10 +36,28 @@ class MTDIController extends Controller
             'years3',
             'apps3',
             'years4',
-            'series4'
+            'series4',
+            'years5',
+            'series5'
         ]));
     }
 
+
+
+    private function groupDataWebinar($data5)
+    {
+        $years5 = [];
+        $series5 = [];
+
+        foreach ($data5 as $item) {
+            if (!empty($item->tahun) && !empty($item->jumlah_kegiatan)) { // Memastikan nilai tidak kosong
+                $years5[] = $item->tahun;
+                $series5[] = $item->jumlah_kegiatan;
+            }
+        }
+
+        return [$years5, $series5];
+    }
 
     private function groupDataKLDIKerjaSama($data4)
 {
