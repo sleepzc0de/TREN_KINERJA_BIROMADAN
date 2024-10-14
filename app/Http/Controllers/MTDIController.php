@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\mtdi_capaian_indeks_pengguna;
 use App\Models\mtdi_data_pendaftaran_akun_spse_simpel;
+use App\Models\mtdi_jumlah_kldi_yang_bekerja_sama;
 use App\Models\mtdi_list_project_aplikasi;
 use Illuminate\Http\Request;
 
@@ -14,10 +15,13 @@ class MTDIController extends Controller
         $data1 = mtdi_capaian_indeks_pengguna::all();
         $data2 = mtdi_data_pendaftaran_akun_spse_simpel::all();
         $data3 = mtdi_list_project_aplikasi::all();
+        $data4 = mtdi_jumlah_kldi_yang_bekerja_sama::all();
 
         list($years, $series) = $this->groupDataCapaianIndeksPengguna($data1);
         list($years2, $series2) = $this->groupDataAkunSPSESIMPEL($data2);
         list($years3, $series3, $apps3) = $this->groupDataListAplikasi($data3);
+        list($years4, $series4) = $this->groupDataKLDIKerjaSama($data4);
+
 
         return view('content.trend_mtdi', compact([
             'series',
@@ -26,9 +30,44 @@ class MTDIController extends Controller
             'years2',
             'series3',
             'years3',
-            'apps3'
+            'apps3',
+            'years4',
+            'series4'
         ]));
     }
+
+
+    private function groupDataKLDIKerjaSama($data4)
+{
+    $yearCounts = []; // To store the count of entries for each year
+
+    // Loop through each entry and count occurrences per year
+    foreach ($data4 as $item) {
+        $year = $item->tahun; // Assuming 'tahun' is the column for the year
+
+        // Increment the count for each year
+        if (isset($yearCounts[$year])) {
+            $yearCounts[$year]++;
+        } else {
+            $yearCounts[$year] = 1;
+        }
+    }
+
+    $years4 = array_keys($yearCounts);
+    sort($years4);
+
+
+    $series4 = [];
+    foreach ($years4 as $year) {
+        $series4[] = $yearCounts[$year];
+    }
+
+
+    return [$years4, $series4];
+}
+
+
+
 
     private function groupDataListAplikasi($data3)
     {
@@ -180,5 +219,4 @@ class MTDIController extends Controller
                 break;
         }
     }
-
 }
